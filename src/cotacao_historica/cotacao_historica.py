@@ -63,18 +63,18 @@ df['PREÇO MÉDIO'] = pd.to_numeric(df['PREÇO MÉDIO'])
 df['PREÇO MÉDIO'] = df['PREÇO MÉDIO'] / 100
 
 # Último preço
-df['ÚLTIMO'] = data['data'].str[108:121]
-df['ÚLTIMO'] = df['ÚLTIMO'].str.replace(" ", "")
-df['ÚLTIMO'] = pd.to_numeric(df['ÚLTIMO'])
-df['ÚLTIMO'] = df['ÚLTIMO'] / 100
+df['ÚLTIMO PREÇO'] = data['data'].str[108:121]
+df['ÚLTIMO PREÇO'] = df['ÚLTIMO PREÇO'].str.replace(" ", "")
+df['ÚLTIMO PREÇO'] = pd.to_numeric(df['ÚLTIMO PREÇO'])
+df['ÚLTIMO PREÇO'] = df['ÚLTIMO PREÇO'] / 100
 
 # Volume total de titulos negociados
 df['VOLUME'] = data['data'].str[170:188]
 df['VOLUME'] = pd.to_numeric(df['VOLUME'])
 
 # Fator de cotação do papel
-df['FATCOT'] = data['data'].str[210:217]
-df['FATCOT'] = pd.to_numeric(df['FATCOT'])
+df['FATOR COTAÇÃO'] = data['data'].str[210:217]
+df['FATOR COTAÇÃO'] = pd.to_numeric(df['FATOR COTAÇÃO'])
 
 # Código ISIN
 df['CODISIN'] = data['data'].str[230:242]
@@ -87,5 +87,6 @@ df['TIPO DE ATIVO'] = df['CODISIN'].str[6:9]
 
 # Espécie de ativo
 df['ESPÉCIE DE ATIVO'] = df['CODISIN'].str[9:11]
+
 
 print(df)
