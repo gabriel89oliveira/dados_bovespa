@@ -55,6 +55,27 @@ class HistoricPrices(BaseModel):
             (('date', 'ticker', 'isin'), True),
         )
 
+class IncomeStatements(BaseModel):
+    cd_conta = CharField(column_name='CD_CONTA', index=True)
+    cd_cvm = IntegerField(column_name='CD_CVM', index=True)
+    cnpj_cia = CharField(column_name='CNPJ_CIA')
+    denom_cia = CharField(column_name='DENOM_CIA')
+    ds_conta = CharField(column_name='DS_CONTA')
+    dt_fim_exerc = DateField(column_name='DT_FIM_EXERC')
+    dt_ini_exerc = DateField(column_name='DT_INI_EXERC')
+    dt_refer = DateField(column_name='DT_REFER', index=True)
+    escala_moeda = CharField(column_name='ESCALA_MOEDA')
+    moeda = CharField(column_name='MOEDA')
+    st_conta_fixa = CharField(column_name='ST_CONTA_FIXA')
+    vl_conta = FloatField(column_name='VL_CONTA')
+    id = BigAutoField()
+
+    class Meta:
+        table_name = 'income_statements'
+        indexes = (
+            (('dt_refer', 'cd_conta', 'cd_cvm'), True),
+        )
+
 # class Migrations(BaseModel):
 #     batch = IntegerField()
 #     migration = CharField()
