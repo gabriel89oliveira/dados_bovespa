@@ -7,11 +7,11 @@ from app.Services.global_documents import GlobalDocuments
 Seed Historic Prices from Bovespa
 
 """
-SeedHistoricPrices.update()
+# SeedHistoricPrices.update()
 
 
 """
 Update documents from CVM
 
 """
-# GlobalDocuments.update()
+GlobalDocuments.update()
