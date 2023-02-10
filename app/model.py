@@ -19,6 +19,27 @@ class BaseModel(Model):
 #     class Meta:
 #         table_name = 'ativos'
 
+class Companies(BaseModel):
+    cd_cvm = IntegerField(index=True)
+    cnpj_companhia = CharField(index=True)
+    created_at = DateTimeField(null=True)
+    denom_cia = CharField()
+    descricao_atividade = CharField(null=True)
+    especie_controle_acionario = CharField(null=True)
+    id = BigAutoField()
+    pagina_web = CharField(null=True)
+    qnt_on = IntegerField(null=True)
+    qnt_pn = IntegerField(null=True)
+    segmento = CharField(null=True)
+    setor_atividade = CharField(null=True)
+    situacao_emissor = CharField(null=True)
+    ticker = CharField(index=True)
+    updated_at = DateTimeField(null=True)
+    valor_mobiliario = CharField(null=True)
+
+    class Meta:
+        table_name = 'companies'
+
 # class FailedJobs(BaseModel):
 #     connection = TextField()
 #     exception = TextField()
@@ -68,6 +89,8 @@ class IncomeStatements(BaseModel):
     moeda = CharField(column_name='moeda')
     st_conta_fixa = CharField(column_name='st_conta_fixa')
     vl_conta = FloatField(column_name='vl_conta')
+    vl_trimestre = FloatField(column_name='vl_trimestre')
+    trimestre = IntegerField(column_name='trimestre')
     id = BigAutoField()
 
     class Meta:
