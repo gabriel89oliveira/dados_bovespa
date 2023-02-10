@@ -11,13 +11,27 @@ class BaseModel(Model):
     class Meta:
         database = database
 
-# class Ativos(BaseModel):
-#     created_at = DateTimeField(null=True)
-#     id = BigAutoField()
-#     updated_at = DateTimeField(null=True)
+class Balances(BaseModel):
+    cd_conta = CharField(index=True)
+    cd_cvm = IntegerField(index=True)
+    cnpj_cia = CharField()
+    created_at = DateTimeField(null=True)
+    denom_cia = CharField()
+    ds_conta = CharField()
+    dt_fim_exerc = DateField()
+    dt_refer = DateField(index=True)
+    escala_moeda = CharField()
+    id = BigAutoField()
+    moeda = CharField()
+    st_conta_fixa = CharField()
+    updated_at = DateTimeField(null=True)
+    vl_conta = FloatField()
 
-#     class Meta:
-#         table_name = 'ativos'
+    class Meta:
+        table_name = 'balances'
+        indexes = (
+            (('dt_refer', 'cd_conta', 'cd_cvm'), True),
+        )
 
 class Companies(BaseModel):
     cd_cvm = IntegerField(index=True)
@@ -40,17 +54,17 @@ class Companies(BaseModel):
     class Meta:
         table_name = 'companies'
 
-# class FailedJobs(BaseModel):
-#     connection = TextField()
-#     exception = TextField()
-#     failed_at = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
-#     id = BigAutoField()
-#     payload = TextField()
-#     queue = TextField()
-#     uuid = CharField(unique=True)
+class FailedJobs(BaseModel):
+    connection = TextField()
+    exception = TextField()
+    failed_at = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
+    id = BigAutoField()
+    payload = TextField()
+    queue = TextField()
+    uuid = CharField(unique=True)
 
-#     class Meta:
-#         table_name = 'failed_jobs'
+    class Meta:
+        table_name = 'failed_jobs'
 
 class HistoricPrices(BaseModel):
     average_price = FloatField(null=True)
@@ -76,72 +90,74 @@ class HistoricPrices(BaseModel):
             (('date', 'ticker', 'isin'), True),
         )
 
-class IncomeStatements(BaseModel):
-    cd_conta = CharField(column_name='cd_conta', index=True)
-    cd_cvm = IntegerField(column_name='cd_cvm', index=True)
-    cnpj_cia = CharField(column_name='cnpj_cia')
-    denom_cia = CharField(column_name='denom_cia')
-    ds_conta = CharField(column_name='ds_conta')
-    dt_fim_exerc = DateField(column_name='dt_fim_exerc')
-    dt_ini_exerc = DateField(column_name='dt_ini_exerc')
-    dt_refer = DateField(column_name='dt_refer', index=True)
-    escala_moeda = CharField(column_name='escala_moeda')
-    moeda = CharField(column_name='moeda')
-    st_conta_fixa = CharField(column_name='st_conta_fixa')
-    vl_conta = FloatField(column_name='vl_conta')
-    vl_trimestre = FloatField(column_name='vl_trimestre')
-    trimestre = IntegerField(column_name='trimestre')
-    id = BigAutoField()
+class Migrations(BaseModel):
+    batch = IntegerField()
+    migration = CharField()
 
     class Meta:
-        table_name = 'income_statements'
+        table_name = 'migrations'
+
+class PasswordResets(BaseModel):
+    created_at = DateTimeField(null=True)
+    email = CharField(primary_key=True)
+    token = CharField()
+
+    class Meta:
+        table_name = 'password_resets'
+
+class PersonalAccessTokens(BaseModel):
+    abilities = TextField(null=True)
+    created_at = DateTimeField(null=True)
+    expires_at = DateTimeField(null=True)
+    id = BigAutoField()
+    last_used_at = DateTimeField(null=True)
+    name = CharField()
+    token = CharField(unique=True)
+    tokenable_id = BigIntegerField()
+    tokenable_type = CharField()
+    updated_at = DateTimeField(null=True)
+
+    class Meta:
+        table_name = 'personal_access_tokens'
+        indexes = (
+            (('tokenable_type', 'tokenable_id'), False),
+        )
+
+class Statements(BaseModel):
+    cd_conta = CharField(index=True)
+    cd_cvm = IntegerField(index=True)
+    cnpj_cia = CharField()
+    created_at = DateTimeField(null=True)
+    denom_cia = CharField()
+    ds_conta = CharField()
+    dt_fim_exerc = DateField()
+    dt_ini_exerc = DateField()
+    dt_refer = DateField(index=True)
+    escala_moeda = CharField()
+    id = BigAutoField()
+    moeda = CharField()
+    st_conta_fixa = CharField()
+    trimestre = IntegerField()
+    updated_at = DateTimeField(null=True)
+    vl_conta = FloatField()
+    vl_trimestre = FloatField()
+
+    class Meta:
+        table_name = 'statements'
         indexes = (
             (('dt_refer', 'cd_conta', 'cd_cvm'), True),
         )
 
-# class Migrations(BaseModel):
-#     batch = IntegerField()
-#     migration = CharField()
+class Users(BaseModel):
+    created_at = DateTimeField(null=True)
+    email = CharField(unique=True)
+    email_verified_at = DateTimeField(null=True)
+    id = BigAutoField()
+    name = CharField()
+    password = CharField()
+    remember_token = CharField(null=True)
+    updated_at = DateTimeField(null=True)
 
-#     class Meta:
-#         table_name = 'migrations'
-
-# class PasswordResets(BaseModel):
-#     created_at = DateTimeField(null=True)
-#     email = CharField(primary_key=True)
-#     token = CharField()
-
-#     class Meta:
-#         table_name = 'password_resets'
-
-# class PersonalAccessTokens(BaseModel):
-#     abilities = TextField(null=True)
-#     created_at = DateTimeField(null=True)
-#     expires_at = DateTimeField(null=True)
-#     id = BigAutoField()
-#     last_used_at = DateTimeField(null=True)
-#     name = CharField()
-#     token = CharField(unique=True)
-#     tokenable_id = BigIntegerField()
-#     tokenable_type = CharField()
-#     updated_at = DateTimeField(null=True)
-
-#     class Meta:
-#         table_name = 'personal_access_tokens'
-#         indexes = (
-#             (('tokenable_type', 'tokenable_id'), False),
-#         )
-
-# class Users(BaseModel):
-#     created_at = DateTimeField(null=True)
-#     email = CharField(unique=True)
-#     email_verified_at = DateTimeField(null=True)
-#     id = BigAutoField()
-#     name = CharField()
-#     password = CharField()
-#     remember_token = CharField(null=True)
-#     updated_at = DateTimeField(null=True)
-
-#     class Meta:
-#         table_name = 'users'
+    class Meta:
+        table_name = 'users'
 

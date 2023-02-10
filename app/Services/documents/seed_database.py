@@ -6,7 +6,8 @@ from datetime import datetime
 
 from app.Services.documents.file_helper import FileHelper
 
-from app.model import IncomeStatements
+from app.model import Statements
+from app.model import Balances
 
 class SeedDatabase:
 
@@ -28,7 +29,7 @@ class SeedDatabase:
         print('  Rodando Seed para DFP', flush=True)
 
         statements = pd.DataFrame()
-        assets = pd.DataFrame()
+        balances = pd.DataFrame()
 
         # Document folder in DFP storage
         folder_path = storage_path + "DFP"
@@ -46,11 +47,11 @@ class SeedDatabase:
 
             # Concat values from Assets
             item = SeedDatabase.retrieve_data(folder_path + "/" + filename, 'dfp', 'BPA')
-            assets = pd.concat([assets, item])
+            balances = pd.concat([balances, item])
 
             # Concat values from Liabilities
             item = SeedDatabase.retrieve_data(folder_path + "/" + filename, 'dfp', 'BPP')
-            assets = pd.concat([assets, item])
+            balances = pd.concat([balances, item])
 
 
         print('  Rodando Seed para ITR', flush=True)
@@ -71,24 +72,24 @@ class SeedDatabase:
 
             # Concat values from Assets
             item = SeedDatabase.retrieve_data(folder_path + "/" + filename, 'itr', 'BPA')
-            assets = pd.concat([assets, item])
+            balances = pd.concat([balances, item])
 
             # Concat values from Liabilities
             item = SeedDatabase.retrieve_data(folder_path + "/" + filename, 'itr', 'BPP')
-            assets = pd.concat([assets, item])
+            balances = pd.concat([balances, item])
 
         # Make adjustments to statements
         statements = SeedDatabase.adjust_statements(statements)
 
-        # Make adjustments to assets
-        assets = SeedDatabase.adjust_assets(assets)
+        # Make adjustments to balances
+        balances = SeedDatabase.adjust_balances(balances)
         
         # Seed quarter values
         print('  Semeando valores de demonstrativo', flush=True)
-        SeedDatabase.seed_db(statements)
+        SeedDatabase.seed_db(statements, 'statement')
 
         print('  Semeando valores de balanço', flush=True)
-        SeedDatabase.seed_db(assets)
+        SeedDatabase.seed_db(balances, 'balance')
     
 
     """
@@ -124,24 +125,24 @@ class SeedDatabase:
     
 
     """
-    Adjust Assets
+    Adjust Balances
 
-    Make adjustments to assets to filter unecessary
+    Make adjustments to balances to filter unecessary
     data, an calculate quarter values
 
     """
-    def adjust_assets(assets):
+    def adjust_balances(balances):
 
         # Convert values to datetime
-        assets['dt_fim_exerc'] = pd.to_datetime(assets['dt_fim_exerc'])
+        balances['dt_fim_exerc'] = pd.to_datetime(balances['dt_fim_exerc'])
 
         # Convert values to float
-        assets['vl_conta'] = assets['vl_conta'].astype(float)
+        balances['vl_conta'] = balances['vl_conta'].astype(float)
         
         # Convert numbers of vl_conta to same scale
-        assets['vl_conta'] = np.where(assets['escala_moeda'] == 'MIL', assets['vl_conta'] * 1000, assets['vl_conta'])
+        balances['vl_conta'] = np.where(balances['escala_moeda'] == 'MIL', balances['vl_conta'] * 1000, balances['vl_conta'])
 
-        return assets
+        return balances
 
         
     """
@@ -174,23 +175,6 @@ class SeedDatabase:
             df.columns = df.columns.str.lower()
 
             return df
-
-
-    # """
-    # Convert column values to
-    # specific types as needed
-
-    # """
-    # def convert_columns(statements):
-
-    #     # Convert values to datetime
-    #     statements['dt_ini_exerc'] = pd.to_datetime(statements['dt_ini_exerc'])
-    #     statements['dt_fim_exerc'] = pd.to_datetime(statements['dt_fim_exerc'])
-
-    #     # Convert values to float
-    #     statements['vl_conta'] = statements['vl_conta'].astype(float)
-
-    #     return statements
 
 
     """
@@ -235,15 +219,19 @@ class SeedDatabase:
         return result
 
 
-    def seed_db(statements):
+    def seed_db(items, model):
             
-        # print('  |- Fazendo seed: ' + str(year), flush=True)
-
         # Seed in chunks
-        while (len(statements.index) > 0):
+        while (len(items.index) > 0):
             
-            print('   Itens restantes: ' + str(len(statements.index)), flush=True)
-            chunk_df = statements.head(10000)
+            print('   Itens restantes: ' + str(len(items.index)), flush=True)
+            chunk_df = items.head(10000)
             list_of_dicts = chunk_df.to_dict('records')
-            IncomeStatements.insert_many(list_of_dicts).on_conflict(action='IGNORE').execute()
-            statements = statements.iloc[10000:]
+
+            if(model == 'balance'):
+                Balances.insert_many(list_of_dicts).on_conflict(action='IGNORE').execute()
+            
+            if(model == 'statement'):
+                Statements.insert_many(list_of_dicts).on_conflict(action='IGNORE').execute()
+            
+            items = items.iloc[10000:]

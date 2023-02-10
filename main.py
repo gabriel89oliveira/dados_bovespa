@@ -1,5 +1,5 @@
 from app.Services.cotacao_historica import SeedHistoricPrices
-from app.Services.global_documents import GlobalDocuments
+# from app.Services.global_documents import GlobalDocuments
 from app.Services.company_service import CompanyService
 from app.Services.manage_documents import ManageDocuments
 
@@ -23,4 +23,4 @@ ManageDocuments.update()
 Update company data
 
 """
-# CompanyService.get_company_data()
+CompanyService.get_company_data()
